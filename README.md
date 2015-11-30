@@ -115,7 +115,7 @@ You can consult the download history in the sqlite database.
 
 
 ## Algorithm
-
+```
            yes
 Ignored ----------> Next NZB
 
@@ -166,3 +166,4 @@ history   --------------+
    v
    
 Download movie
+```
