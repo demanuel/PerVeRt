@@ -43,7 +43,7 @@ Download NZBs that correspond to your wishlist as soon as it appears in the inde
 2. Create a conf file. You can take the one in the conf/ folder as a model
 3. Execute pervert periodicaly. For example using cron to run every 15 minutes:
 ```
-*/15 * * * * perl /path/to/pervert/folder/pervert.pl -f /path/to/pervert/config/folder/pervert.cfg
+*/15 * * * * perl /path/to/pervert/folder/pervert.pl -c /path/to/pervert/config/folder/pervert.cfg
 ```
 
 ## Configuration
