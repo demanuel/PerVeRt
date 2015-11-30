@@ -118,52 +118,29 @@ You can consult the download history in the sqlite database.
 ```
            yes
 Ignored ----------> Next NZB
-
    |                    ^
-   
    | No                 |
-   
    |                    |
-   
    v           No       |
-   
 Required ---------------+
-
    |                    ^
-   
    | Yes                |
-   
    |                    |
-   
    v                    |
-   
 Extract Name            |
-
    |                    |
-   
    |                    |
-   
    v                    |
-   
 Extract Series          |
-
    |                    |
-   
    |                    |
-   
    v                    |
-   
 Exists in     Yes       |
-
 history   --------------+
-
    |
-   
    | No
-   
    |
-   
    v
-   
 Download movie
+
 ```
