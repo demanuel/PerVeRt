@@ -9,6 +9,7 @@ Why a fancy gui, when i just want to setup a whish list? Why a local HTTP server
 when i just want something that runs periodicaly to see if my wishes are available?
 
 **K**eep **I**t **S**imple **S**tupid
+
 *Do one thing and do it well*
 
 ### What it will do
@@ -75,12 +76,19 @@ The configuration file is a json file:
 Use a [online json validator](http://jsonlint.com/)
 
 feeds: You can add how many RSS feeds you want
+
 requests: path to text file with your requests
+
 downloadFolder: path to where the nzbs should be saved
+
 requiredRegexp: regular expression of terms that **every NZB candidate must have**
+
 ignoredRegep: regular expression of terms that **every NZB candidate must NOT have**
+
 movieNameRegexp: regular expression that will extract the name and the group from the nzb name
+
 serieIdRegexp: regular expression that will extract the name of the serie, the season and episode
+
 
 **Note:** The movieNameRegexp and serieIdRegexp will be case insensitive.
 
