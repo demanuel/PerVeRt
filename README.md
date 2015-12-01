@@ -1,4 +1,4 @@
-# PeRverT
+# PerVeRt
 Simple download automation (PVR) for Usenet
 
 
@@ -20,11 +20,10 @@ Download NZBs that correspond to your wishlist as soon as it appears in the inde
 2. Search the usenet
 3. Automatic failed download handling
 4. Run pre or post processing scripts
-5. Manage your shows.
-6. Download your shows
-7. Waste your machine resources
-8. Notify another application
-9. File Renaming
+5. Download your shows
+6. Waste your machine resources
+7. Notify another application
+8. File Renaming
 
 
 
@@ -117,30 +116,30 @@ You can consult the download history in the sqlite database.
 ## Algorithm
 ```
            yes
-Ignored ----------> Next NZB
-   |                    ^
-   | No                 |
-   |                    |
-   v           No       |
-Required ---------------+
-   |                    ^
-   | Yes                |
-   |                    |
-   v                    |
-Extract Name            |
-   |                    |
-   |                    |
-   v                    |
-Extract Series          |
-   |                    |
-   |                    |
-   v                    |
-Exists in     Yes       |
-history   --------------+
+Ignored ----------> Next Candidate
+   |                      ^
+   | No                   |
+   |                      |
+   v           No         |
+Required -----------------+
+   |                      ^
+   | Yes                  |
+   |                      |
+   v                      |
+Extract Name              |
+   |                      |
+   |                      |
+   v                      |
+Extract Series            |
+   |                      |
+   |                      |
+   v                      |
+Exists in     Yes         |
+history   ----------------+
    |
    | No
    |
    v
-Download movie
+Download nzb
 
 ```
