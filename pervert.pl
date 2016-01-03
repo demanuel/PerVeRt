@@ -129,22 +129,31 @@ sub start_processing{
 	    my $name = $1;
 	    my $group = $3;
 	    my $episode = 0;
-	    
+
 	    $reg = qr/$rSerieID/i;
 	    if ($name =~ /$reg/) {
 	      my %data = ();
 	      $name = $1;
 	      $episode = $2;
 	    }
+
+	    my @titleWords = split(/\./, $name);
 	    
 	    for my $wish (@wishList) {
 	      my @words = split(' ',$wish);
 	      my $count = 0;
-	      for my $word (@words) {
-		if ($title =~ /$word/i || $episode =~ /$word/i || $group =~ /$word/i){
-		  $count++;
+	      for my $wishWord (@words) {
+		for (@titleWords) {
+		  if ($_ eq $wishWord || $episode =~ /$wishWord/i) {
+		    $count++;
+		  }
 		}
+		
 	      }
+	      #TODO: confirm this
+	      #say "[$count]",Dumper(@words);
+
+	      
 	      if ($count == @words) {
 		say "\t\tmatch: $title [$wish]";
 		my @dataList = ();
