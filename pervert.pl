@@ -50,7 +50,7 @@ sub check_duplicates_and_download{
     my $episode='';
     my $nzbName = $configs->{downloadFolder}."/$name";
     
-    if ($name =~ /$rSerieID/) {
+    if ($name =~ $rSerieID) {
       $name = $1;
       $episode = $2;
 
@@ -99,6 +99,7 @@ sub start_processing{
   my $rIgnored = $configs->{ignoredRegexp};
   my $rMovieName = $configs->{movieNameRegexp};
   my $rSerieID = $configs->{serieIdRegexp};
+#  say "$rSerieID";
   my %candidates = ();
 
   
@@ -108,6 +109,8 @@ sub start_processing{
     chomp;
     push @wishList, $_ if($_ ne '');
   }
+#  use Data::Dumper;
+#  say Dumper(@wishList);
   
   close $ifh;
 
@@ -121,42 +124,56 @@ sub start_processing{
       my $dom = XML::LibXML->load_xml(string => $response->content);
       for my $item ($dom->findnodes('//channel/item')) {
 	my $title = $item->findvalue('title');
+	say "\t$title";
 	if ($title !~ /$rIgnored/i && $title =~ /$rRequired/) {
+#	  say "\t\t1st Check!: $rMovieName";
+	  my $reg = qr/$rMovieName/i;
 	  
-	  my $reg = qr/$rMovieName/;
-	  
-	  if ($title =~ /$reg/i) {
+	  if ($title =~ $reg) {
+
 	    my $name = $1;
 	    my $group = $3;
 	    my $episode = 0;
 
+#	    say "\t\t Extracted the name [$name - [$group]]";
+	    
 	    $reg = qr/$rSerieID/i;
-	    if ($name =~ /$reg/) {
+	    my $isSeries=0;
+	    if ($name =~ $reg) {
+#	      say "\t\t\t It's a series!";
 	      my %data = ();
 	      $name = $1;
 	      $episode = $2;
+	      $isSeries=1;
 	    }
 
 	    my @titleWords = split(/\./, $name);
 	    
 	    for my $wish (@wishList) {
-	      my @words = split(' ',$wish);
 	      my $count = 0;
+	      my @words = split(' ',$wish);
 	      for my $wishWord (@words) {
-		for (@titleWords) {
-		  if ($_ eq $wishWord || $episode =~ /$wishWord/i) {
+#		say "\t\t\twishword: $wishWord";
+		$reg = qr/$wishWord/i;
+		if ($isSeries && $episode =~ $reg) {
 		    $count++;
+		    next;
+		}
+		for (@titleWords) {
+		  if ($_ eq $wishWord ) {
+		    $count++;
+		    last;
 		  }
 		}
-		
 	      }
-	      #TODO: confirm this
-	      #say "[$count]",Dumper(@words);
+	      
+#	      say "\t\t[$wish [$count] for '$name']";#Dumper(@words);
 
 	      
 	      if ($count == @words) {
 		say "\t\tmatch: $title [$wish]";
 		my @dataList = ();
+		
 		if (exists $candidates{$title}) {
 		  @dataList = @{$candidates{$title}};
 		}
