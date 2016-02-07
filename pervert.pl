@@ -166,11 +166,13 @@ sub start_processing{
 		  }
 		}
 	      }
+	      next if !$count;
 	      
 #	      say "\t\t[$wish [$count] for '$name']";#Dumper(@words);
-
-	      
-	      if ($count == @words) {
+	      my $totalTokens = scalar(split('.',$title));
+	      my $tresholdTokens = floor(($totalTokens-3) * 0.3);
+	      say "\t\t$count > $tresholdTokens";
+	      if ($count == @words && $count >  $tresholdTokens) {
 		say "\t\tmatch: $title [$wish]";
 		my @dataList = ();
 		
