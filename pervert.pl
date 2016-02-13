@@ -26,9 +26,11 @@ use JSON;
 use XML::LibXML;
 use LWP::UserAgent;
 use DBI;
+use POSIX qw/floor/;
+use HTML::Entities;
 
 my $HISTORY_TABLE="history";
-
+binmode STDOUT, ":utf8";
 
 sub check_duplicates_and_download{
   my ($DBH, $configs, $candidates, $ua) = @_;
@@ -69,6 +71,7 @@ sub check_duplicates_and_download{
       for my $url (@{$candidates->{$key}}) {
 
 	my $response = $ua->get($url, ':content_file'=>$nzbName);
+
 	unless ( $response->is_success ) {
 	  warn $response->status_line;
 	  next;
@@ -92,6 +95,7 @@ sub check_duplicates_and_download{
 sub start_processing{
   my ($DBH, $configs) = @_;
   my $browser = LWP::UserAgent->new(
+				    agent => "PerVerT App/1.0",
 				    ssl_opts => { verify_hostname => 0 },
 				   );
 
@@ -120,15 +124,24 @@ sub start_processing{
     say "Extracting from $website";
 
     my $response = $browser->get($url);
+    
     eval{
-      my $dom = XML::LibXML->load_xml(string => $response->content);
+      my $content = $response->content;
+      $content =~ s/&bull;//gi;
+      my $dom = XML::LibXML->load_xml(string => $content);
       for my $item ($dom->findnodes('//channel/item')) {
 	my $title = $item->findvalue('title');
-	say "\t$title";
+	say "\t$title - $rMovieName";
 	if ($title !~ /$rIgnored/i && $title =~ /$rRequired/) {
 #	  say "\t\t1st Check!: $rMovieName";
 	  my $reg = qr/$rMovieName/i;
-	  
+
+	  #Algorithm:
+	  #1- The title needs to match the movie name regexp, so we can extract the requested info
+	  #2- We need to split the words from the title and from the wish
+	  #3- We need to compare them one by one.
+	  #4- If the count is zero then goes to the next wish
+	  #5- If the count isn't zero then apply treshold.
 	  if ($title =~ $reg) {
 
 	    my $name = $1;
@@ -147,47 +160,44 @@ sub start_processing{
 	      $isSeries=1;
 	    }
 
-	    my @titleWords = split(/\./, $name);
-	    
+###################################################################################################
+	    my $titleWordsCount = split(/\./, $name);
 	    for my $wish (@wishList) {
-	      my $count = 0;
-	      my @words = split(' ',$wish);
-	      for my $wishWord (@words) {
-#		say "\t\t\twishword: $wishWord";
-		$reg = qr/$wishWord/i;
-		if ($isSeries && $episode =~ $reg) {
-		    $count++;
-		    next;
+	      my $count=0;
+	      my @wishWords = split(/\.|\s/, $wish);
+	      for my $wishWanted (@wishWords) {
+		$reg = qr/$wishWanted/i;
+		if ($name =~ $reg) {
+		  $count++;
+		}elsif ($isSeries && $episode =~ $reg) {
+		  $count++;
 		}
-		for (@titleWords) {
-		  if ($_ eq $wishWord ) {
-		    $count++;
-		    last;
+		next if $count == 0;
+		say "Candidate: [$wish] for \"$name\"";
+		#apply treshold
+		my $minimumTresholdCount = floor($titleWordsCount * 0.3);
+		#If count is bigger than the treshold and it matched all the wishwords
+		if ($count > $minimumTresholdCount && $count == @wishWords || 1==@wishWords) {
+		  my @dataList = ();
+		  
+		  if (exists $candidates{$title}) {
+		    @dataList = @{$candidates{$title}};
 		  }
+		  
+		  push @dataList, $item->findvalue('link');
+		  $candidates{$title}= \@dataList;
+		  
 		}
-	      }
-	      next if !$count;
-	      
-#	      say "\t\t[$wish [$count] for '$name']";#Dumper(@words);
-	      my $totalTokens = scalar(split('.',$title));
-	      my $tresholdTokens = floor(($totalTokens-3) * 0.3);
-	      say "\t\t$count > $tresholdTokens";
-	      if ($count == @words && $count >  $tresholdTokens) {
-		say "\t\tmatch: $title [$wish]";
-		my @dataList = ();
-		
-		if (exists $candidates{$title}) {
-		  @dataList = @{$candidates{$title}};
-		}
-		
-		push @dataList, $item->findvalue('link');
-		$candidates{$title}= \@dataList;
 	      }
 	    }
+###################################################################################################
 	  }
 	}
       }
     };
+    if ($@) {
+      warn $@;
+    }
       
   }
   
