@@ -65,7 +65,7 @@ The configuration file is a json file:
     "requiredRegexp": "regular|expression",
     "ignoredRegexp": "regular|expression",
     "movieNameRegexp": "^(.*?)\\.(1080|720p|x264|webrip).+-(.*)",
-    "serieIdRegexp": "(.*)\\.(s\\d{2}e\\d{2})"
+    "serieIdRegexp": "(.*)\\.(s\\d{2}e\\d{2}|20\\d{2}\\.\\d{2}\\.\\d{2})"
 
 }
 ```

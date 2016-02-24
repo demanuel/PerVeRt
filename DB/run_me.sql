@@ -1,5 +1,5 @@
 create table history(
-    id INT primary key,
+    id INTEGER primary key,
     name text not null,
     episode text default null,
     url text not null,
