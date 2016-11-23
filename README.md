@@ -12,6 +12,9 @@ when i just want something that runs periodicaly to see if my wishes are availab
 
 This tries to *Do one thing and do it well*
 
+*Note* When i started this i wasn't aware of [Flexget](http://www.flexget.com/). So think
+about this as something similar (and way more simpler and less features) but only for usenet
+
 ### What it will do
 Download NZBs that correspond to your wishlist as soon as it appears in the indexer.
 This tries to follow the most possible way the scene rules so a nzb named with "[", "]", "_" or
