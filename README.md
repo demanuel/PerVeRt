@@ -106,11 +106,11 @@ The configuration file is a json file:
 **Please be sure that the configuration file is a valid JSON file!**
 Use a [online json validator](http://jsonlint.com/)
 
-feeds: You can add how many RSS feeds you want
+- feeds: You can add how many RSS feeds you want
 
-requests: path to text file with your requests
+- requests: path to text file with your requests
 
-filters: filters to apply. There are 2 kinds of filters: the "ignore" and the "accept".
+- filters: filters to apply. There are 2 kinds of filters: the "ignore" and the "accept".
 The ignore ones, will make the nzb to be filtered and ignored if it matches
 The accept ones, will make the nzb to not be filtered if it matches.
 Example:
