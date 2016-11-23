@@ -10,10 +10,12 @@ when i just want something that runs periodicaly to see if my wishes are availab
 
 **K**eep **I**t **S**imple **S**tupid
 
-*Do one thing and do it well*
+This tries to *Do one thing and do it well*
 
 ### What it will do
 Download NZBs that correspond to your wishlist as soon as it appears in the indexer.
+This tries to follow the most possible way the scene rules so a nzb named with "[", "]", "_" or
+any other character that ain't in the official set are ignored.
 
 ### What it doesn't do
 1. Show the calendar of upcoming episodes.
@@ -62,12 +64,37 @@ The configuration file is a json file:
     "requests":"/path/to/requests.txt",
     "historyDatabase": "/path/to/sqlite/database/created/in/step/1/database.sqlite",
     "downloadFolder": "/path/to/save/nzbs",
-    "requiredRegexp": "regular|expression",
-    "ignoredRegexp": "regular|expression",
-    "movieNameRegexp": "^(.*?)\\.(1080|720p|x264|webrip).+-(.*)",
-    "serieIdRegexp": "(.*)\\.(s\\d{2}e\\d{2}|20\\d{2}\\.\\d{2}\\.\\d{2})"
+    "filters":{
+        "acceptLanguage":["ENGLiSH"],
+        "acceptSubtitles":[],
+        "acceptResolution":[],
+        "acceptFormat":[],
+        "acceptAudio":[],
+        "acceptGroup":[],
+        "acceptEpisode":[],
+        "acceptSource":[],
+        "acceptBackup":[],
+        "acceptDate":[],
+        "acceptContainer":[],
+        "acceptFix":[],
+        "ignoreType":[],
+        "ignoreLanguage":["GERMAN","SPANiSH","FRENCH","iTALiAN"],
+        "ignoreSubtitles":["NORiC","NL"],
+        "ignoreResolution":[],
+        "ignoreFormat":[],
+        "ignoreAudio":[],
+        "ignoreGroup":[],
+        "ignoreEpisode":[],
+        "ignoreSource":[],
+        "ignoreBackup":[],
+        "ignoreDate":[],
+        "ignoreContainer":[],
+        "ignoreFix":[],
+        "ignoreType":[],
 
+    }
 }
+
 ```
 
 ### configuration
@@ -78,68 +105,70 @@ feeds: You can add how many RSS feeds you want
 
 requests: path to text file with your requests
 
-downloadFolder: path to where the nzbs should be saved
+filters: filters to apply. There are 2 kinds of filters: the "ignore" and the "accept".
+The ignore ones, will make the nzb to be filtered and ignored if it matches
+The accept ones, will make the nzb to not be filtered if it matches.
+Example:
+Wish "my.video"
+```
+ignoreResolution: ["720[pi]"]
+```
+If there's a matching result "my.video.720p", then this will be ignored and not downloaded.
 
-requiredRegexp: regular expression of terms that **every NZB candidate must have**
+However
 
-ignoredRegep: regular expression of terms that **every NZB candidate must NOT have**
+```
+acceptResolution: ["720[pi]"]
+```
+will make all the matches that contains "720p" to not be filtered.
 
-movieNameRegexp: regular expression that will extract the name and the group from the nzb name
 
-serieIdRegexp: regular expression that will extract the name of the serie, the season and episode
-
-
-**Note:** The movieNameRegexp and serieIdRegexp will be case insensitive.
-
+*Note*: Just because the match wasn't filtered it doesn't mean that it will be downloaded.
+If there's already a match with the same name in the DB, then it will not be downloaded.
+To be downloaded, you need to set the field "valid" in the DB to zero.
 
 #### requests/wish list
 
 
 the requests file defined in the configurations must have something like:
 ```
-game thrones s0[6-9]
-movie name group
+my.series episode:s0[6-9]
+my.movie.name group:group
 ```
 
+The spaces are used to split between fields (fields available: language, subtitles, resolution, format, audio, group, episode, source, backup, date, container, fix, type).
+The title field is the default one. Doing
+```
+this is my name
+```
 
-This means that it will look for all the NZBs that have *game thrones* in the name, but only episodes in
-season 6,7,8,9.
+will search for a title with the word "thisismyname".
 
-It will also lookup for something that will match all the words "movie", "name" and "group"
+
+```
+this is my name s03e04
+```
+will search for a title with the word "thisismynames03e04".
+
+What you probably want is:
+```
+this.is.my.name episode:s03e04
+```
+
+or
+
+```
+this.is.my.name date:2016
+```
 
 
 ## Database
-If you want to re-download a NZB, please delete it from the sqlite database.
-You can consult the download history in the sqlite database.
+If you want to re-download new match of NZB previously downloaded, please set the "valid"
+field in the database as zero.
 
-
-## Algorithm
+You can consult the download history in the sqlite database by:
+```SQL
+select * from history
 ```
-           yes
-Ignored ----------> Next Candidate
-   |                      ^
-   | No                   |
-   |                      |
-   v           No         |
-Required -----------------+
-   |                      ^
-   | Yes                  |
-   |                      |
-   v                      |
-Extract Name              |
-   |                      |
-   |                      |
-   v                      |
-Extract Series            |
-   |                      |
-   |                      |
-   v                      |
-Exists in     Yes         |
-history   ----------------+
-   |
-   | No
-   |
-   v
-Download nzb
 
-```
+
