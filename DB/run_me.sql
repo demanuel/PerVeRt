@@ -6,10 +6,9 @@ create table history(
     resolution TEXT,
     format TEXT,
     audio TEXT,
-    "group" TEXT,
+    releaseGroup TEXT,
     episode TEXT,
     source TEXT,
-    backup TEXT,
     date TEXT,
     container TEXT,
     fix TEXT,
@@ -19,7 +18,3 @@ create table history(
     url TEXT not null,
     valid INTEGER DEFAULT 1 check (valid=0 OR valid=1)
 );
-
-
-
-
