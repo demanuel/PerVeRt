@@ -130,7 +130,17 @@ sub _filter_and_remove_duplicates{
   my @candidates=();
   my @finalList = ();
 
-  for my $candidate (@$downloadList){
+  # We need this to make sure that the proper realeases have priority
+  my @downloadList = sort {
+    if(exists $a->{type} && $a->{type} =~ /proper/i){
+      return -1;
+    }elsif(exists $b->{type} && $b->{type} =~ /proper/i){
+      return 1;
+    }else{
+      return $a->{title} cmp $b->{title};
+    } } @$downloadList;
+
+  for my $candidate (@downloadList){
     if(!_exists_in_history($dbh, $candidate) && !_is_filtered($configs->{filters}, $candidate)){
       my $ignore = 0;
       for my $position (0..$#finalList){
@@ -146,7 +156,18 @@ sub _filter_and_remove_duplicates{
                 $finalList[$position] = $candidate;
             }
           }elsif(exists $finalCandidate->{episode} && exists $candidate->{episode} && lc($finalCandidate->{episode}) ne lc($candidate->{episode})){
-            push @finalList, $candidate;
+
+            # Need to check if this case isn't happening:
+            # @finalList = (EP1, EP2); $candidate=EP2.
+            # And we are checking against EP1
+            for my $secondCheckCandidate (@finalList){
+                if (lc($candidate->{episode}) eq lc($secondCheckCandidate->{episode})){
+                  $ignore = 1;
+                  last;
+                }
+            }
+
+            push @finalList, $candidate if !$ignore;
           }
           $ignore = 1;
           next;
