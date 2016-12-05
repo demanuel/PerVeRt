@@ -111,6 +111,7 @@ sub _start_processing{
     print "[$_->{audio}] " if(exists $_->{audio});
     print "[$_->{desc}] " if(exists $_->{desc} && $_->{desc} ne '');
     print "[$2] " if ($_->{url} =~ /http(s)?:\/\/(.*?)\//);
+    print "[$_->{releaseGroup}] " if(exists $_->{releaseGroup} && $_->{releaseGroup} ne '');
     print "\r\n";
    }
    @candidates = @{_filter_and_remove_duplicates($configs, $dbh, \@candidates)};
@@ -150,18 +151,18 @@ sub _filter_and_remove_duplicates{
           $ignore = 1;
           next;
         }
-        if(lc($finalCandidate->{title}) eq lc($candidate->{title}) ){
-          if(exists $finalCandidate->{episode} && exists $candidate->{episode} && lc($finalCandidate->{episode}) eq lc($candidate->{episode}) ){
+        if(fc($finalCandidate->{title}) eq fc($candidate->{title}) ){
+          if(exists $finalCandidate->{episode} && exists $candidate->{episode} && fc($finalCandidate->{episode}) eq fc($candidate->{episode}) ){
             if(exists $finalCandidate->{resolution} && exists $candidate->{resolution} && _convert_resolution_to_int($finalCandidate->{resolution}) < _convert_resolution_to_int($candidate->{resolution})){
                 $finalList[$position] = $candidate;
             }
-          }elsif(exists $finalCandidate->{episode} && exists $candidate->{episode} && lc($finalCandidate->{episode}) ne lc($candidate->{episode})){
+          }elsif(exists $finalCandidate->{episode} && exists $candidate->{episode} && fc($finalCandidate->{episode}) ne fc($candidate->{episode})){
 
             # Need to check if this case isn't happening:
             # @finalList = (EP1, EP2); $candidate=EP2.
             # And we are checking against EP1
             for my $secondCheckCandidate (@finalList){
-                if (lc($candidate->{episode}) eq lc($secondCheckCandidate->{episode})){
+                if (fc($candidate->{episode}) eq fc($secondCheckCandidate->{episode})){
                   $ignore = 1;
                   last;
                 }
