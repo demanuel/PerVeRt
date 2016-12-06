@@ -75,7 +75,7 @@ The configuration file is a json file:
         "acceptResolution":[],
         "acceptFormat":[],
         "acceptAudio":[],
-        "acceptGroup":[],
+        "acceptReleaseGroup":[],
         "acceptEpisode":[],
         "acceptSource":[],
         "acceptBackup":[],
@@ -88,7 +88,7 @@ The configuration file is a json file:
         "ignoreResolution":[],
         "ignoreFormat":[],
         "ignoreAudio":[],
-        "ignoreGroup":[],
+        "ignoreReleaseGroup":[],
         "ignoreEpisode":[],
         "ignoreSource":[],
         "ignoreBackup":[],
@@ -175,5 +175,3 @@ You can consult the download history in the sqlite database by:
 ```SQL
 select * from history
 ```
-
-
