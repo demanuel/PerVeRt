@@ -120,6 +120,10 @@ sub _start_processing{
 
    for my $data (@candidates){
     print 'Downloading: '.$data->{title};
+    print " ".$data->{episode} if exists $data->{episode};
+    print " ".$data->{date} if exists $data->{date};
+    print " ".$data->{resolution} if exists $data->{resolution};
+
     my $isDownloaded = _download($configs, $browser, $data);
     _store_data_to_db($dbh, $data) if $isDownloaded;
    }
@@ -289,7 +293,12 @@ sub _exists_in_history{
   if(exists $data->{episode}){
     $query.=' and episode=?';
     push @parameters, $data->{episode};
+  }elsif(exists $data->{date}){
+    $query.=' and date=?';
+    push @parameters, $data->{date};
   }
+
+
   my $stmt = $dbh->prepare($query);
   $stmt->execute(@parameters);
   my ($tuples, $rows) = $dbh->selectall_arrayref($stmt);
