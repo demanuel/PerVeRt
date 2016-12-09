@@ -67,6 +67,7 @@ sub _start_processing{
         my $data = parse_name($title);
 
         next if $data->{source} eq 'ERROR';
+        $data->{title}=join(".",map{ucfirst $_; } split(/\./, lc($data->{title})));
         for my $wish (@wishes){
           my $approved=1;
           for my $k (keys %$wish){
@@ -283,7 +284,8 @@ sub _exists_in_history{
   my ($dbh, $data) = @_;
 
   my $query = 'select * from history where valid=1 and title=?';
-  my @parameters = ($data->{title});
+  my @parameters = $data->{title};
+
   if(exists $data->{episode}){
     $query.=' and episode=?';
     push @parameters, $data->{episode};

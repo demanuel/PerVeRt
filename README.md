@@ -1,5 +1,5 @@
 # PerVeRt
-Simple download automation (PVR) for Usenet
+Simple and passive download automation (PVR) for Usenet
 
 
 ## Goals
@@ -24,7 +24,7 @@ about this as something similar (and way more simpler and less features) but onl
 
 ### What it doesn't do
 1. Show the calendar of upcoming episodes.
-2. Search the usenet
+2. *Search the usenet or the indexer*
 3. Automatic failed download handling
 4. Run pre or post processing scripts
 5. Download your shows
