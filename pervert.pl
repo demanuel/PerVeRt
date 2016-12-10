@@ -202,6 +202,7 @@ sub _load_wishes{
 
   while (<$ifh>) {
     chomp;
+    next if $_ eq '';
     my %data = (title =>'');
     my @args=split(' ', $_);
     for my $arg (@args){
