@@ -222,7 +222,12 @@ sub _load_wishes{
 sub _download{
   my ($configs, $browser, $data) = @_;
 
-  my $response = $browser->get($data->{url}, ':content_file'=>$configs->{downloadFolder}.'/'.$data->{title}.(exists $data->{episode}?'.'.$data->{episode}:'-'.$data->{releaseGroup}).'.nzb');
+  my $outputFile = $data->{title};
+  $outputFile .= '.'.$data->{episode} if exists $data->{episode};
+  $outputFile .= '.'.$data->{date} if exists $data->{date};
+  $outputFile .= '.nzb';
+
+  my $response = $browser->get($data->{url}, ':content_file'=>$configs->{downloadFolder}."/$outputFile");
   if($response->is_error){
     say "[Unable to connect: ",$response->code."]";
     return 0;
