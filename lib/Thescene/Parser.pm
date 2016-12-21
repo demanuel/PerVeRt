@@ -62,7 +62,7 @@ my %REGULAR_EXPRESSIONS=(
   ],
   subtitles => [
     qr/\.(ingebakken.subs)\./i,
-    qr/\.([A-Za-z]{2,3}[\.-]sub(bed|s)?)\./i,
+    qr/\.([a-z]{2,3}[\.-]*sub(bed|s)?)\./i,
     qr/\.(sub(DANiSH|SWEDiSH|NORWEGiAN|GERMAN|iTALiAN|FRENCH|RUSSIAN|SPANiSH|PORTUGUESE|ENGLiSH|FiNNiSH|GREEK|DUTCH))\./i,
     ],
   fix => [qr/\.((DIR|NFO|SAMPLE|SYNC|PROOF)FIX)\./i],
