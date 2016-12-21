@@ -293,14 +293,14 @@ sub _load_db{
 sub _exists_in_history{
   my ($dbh, $data) = @_;
 
-  my $query = 'select * from history where valid=1 and title=?';
+  my $query = 'select * from history where valid=1 and title like ?';
   my @parameters = $data->{title};
 
   if(exists $data->{episode}){
-    $query.=' and episode=?';
+    $query.=' and episode like ?';
     push @parameters, $data->{episode};
   }elsif(exists $data->{date}){
-    $query.=' and date=?';
+    $query.=' and date like ?';
     push @parameters, $data->{date};
   }
 
@@ -324,7 +324,7 @@ sub _exists_in_history{
     for(keys %$data){
       push @parameters, $_ if(exists $data->{$_} && $_ ne 'url');
     }
-    $query = 'select * from history where '.join(' and ', map{"$_=?"} @parameters );
+    $query = 'select * from history where '.join(' and ', map{ if($_ =~ /valid/){return "$_=?"}else{return "$_ like ?";}} @parameters );
     $stmt = $dbh->prepare($query);
     $stmt->execute(map{$data->{$_}} @parameters);
 
