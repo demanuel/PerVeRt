@@ -317,18 +317,19 @@ sub _exists_in_history{
     $stmt->execute($data->{url});
     ($tuples, $rows) = $dbh->selectall_arrayref($stmt);
     return 1 if scalar(@$tuples)>0; # Same URL
-
     # It can be the same episode but from a different indexer. So we need to check if all the params are different
     # except the url
     @parameters = ();
     for(keys %$data){
       push @parameters, $_ if(exists $data->{$_} && $_ ne 'url');
     }
-    $query = 'select * from history where '.join(' and ', map{ if($_ =~ /valid/){return "$_=?"}else{return "$_ like ?";}} @parameters );
+    $query = 'select * from history where '.join(' and ', map{ if($_ =~ /valid/){ "$_=?";}else{"$_ like ?";}} @parameters );
+
     $stmt = $dbh->prepare($query);
     $stmt->execute(map{$data->{$_}} @parameters);
 
     ($tuples, $rows) = $dbh->selectall_arrayref($stmt);
+
     return scalar(@$tuples)>0;
 
   }else{
