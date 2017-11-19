@@ -9,9 +9,10 @@ use JSON;
 use Getopt::Long;
 use DBI;
 use DBD::SQLite;
-use Thescene::Parser qw/parse_name/;
+use Thescene::Parser qw/parse_string/;
 use LWP::UserAgent;
 use XML::LibXML;
+use Data::Dumper;
 
 sub main{
   my $configFile;
@@ -64,9 +65,9 @@ sub _start_processing{
       my $dom = XML::LibXML->load_xml(string => $content);
       for my $item ($dom->findnodes('//channel/item')) {
         my $title = $item->findvalue('title');
-        my $data = parse_name($title);
+        my $data = parse_string($title);
 
-        next if $data->{source} eq 'ERROR';
+        next if !$data->{source} || !$data->{resolution} || !$data->{source} || !$data->{group};
         $data->{title}=join(".",map{ucfirst $_; } split(/\./, lc($data->{title})));
         for my $wish (@wishes){
           my $approved=1;
@@ -79,15 +80,15 @@ sub _start_processing{
             }
 
             my $regexp = qr/$wish->{$k}/i;
-            if($data->{$k} !~ $regexp){
+            if($data->{$k} !~ /$regexp/){
               $approved=0;
               last;
             }
           }
           if($approved){
             $data->{url}=$item->findvalue('link');
-            my $query = join(' ', map{$_.':'.$wish->{$_}} keys %$wish);
-            $data->{query}=$query;
+            my $searchTerms = join(' ', map{$_.':'.$wish->{$_}} keys %$wish);
+            $data->{search}=$searchTerms;
             push @candidates, $data;
           }
         }
@@ -143,7 +144,16 @@ sub _filter_and_remove_duplicates{
     }elsif(exists $b->{type} && $b->{type} =~ /proper/i){
       return 1;
     }else{
-      return $a->{title} cmp $b->{title};
+      # We prefer the ones with more parameters set. However if they have the same number of parameters set
+      # we prefer the ones with higher resolution.
+      if (keys %$a == keys %$b) {
+        if(exists $a->{resolution} && exists $b->{resolution}) {
+          return _convert_resolution_to_int($a->{resolution}) <=> _convert_resolution_to_int($b->{resolution});
+        } else {
+          return 0;
+        }
+      }
+      return keys %$a cmp keys %$b; 
     } } @$downloadList;
 
   for my $candidate (@downloadList){
@@ -151,32 +161,11 @@ sub _filter_and_remove_duplicates{
       my $ignore = 0;
       for my $position (0..$#finalList){
         my $finalCandidate = $finalList[$position];
-        if (!defined $finalCandidate){
-          push @finalList, $candidate;
-          $ignore = 1;
-          next;
-        }
-        if(fc($finalCandidate->{title}) eq fc($candidate->{title}) ){
-          if(exists $finalCandidate->{episode} && exists $candidate->{episode} && fc($finalCandidate->{episode}) eq fc($candidate->{episode}) ){
-            if(exists $finalCandidate->{resolution} && exists $candidate->{resolution} && _convert_resolution_to_int($finalCandidate->{resolution}) < _convert_resolution_to_int($candidate->{resolution})){
-                $finalList[$position] = $candidate;
-            }
-          }elsif(exists $finalCandidate->{episode} && exists $candidate->{episode} && fc($finalCandidate->{episode}) ne fc($candidate->{episode})){
-
-            # Need to check if this case isn't happening:
-            # @finalList = (EP1, EP2); $candidate=EP2.
-            # And we are checking against EP1
-            for my $secondCheckCandidate (@finalList){
-                if (fc($candidate->{episode}) eq fc($secondCheckCandidate->{episode})){
-                  $ignore = 1;
-                  last;
-                }
-            }
-
-            push @finalList, $candidate if !$ignore;
+        if (lc($finalCandidate->{title}) eq lc($candidate->{title})){
+          if($finalCandidate->{episode} eq $candidate->{episode}) {
+            $ignore = 1;
+            last;
           }
-          $ignore = 1;
-          next;
         }
       }
       push @finalList, $candidate if !$ignore;
@@ -240,7 +229,6 @@ sub _download{
 
 sub _is_filtered{
   my ($filters, $data) = @_;
-  say $data->{title};
 
   my $filterName;
   for my $k (keys %$data){
@@ -257,6 +245,7 @@ sub _is_filtered{
     $filterName='ignore'.ucfirst $k;
     if(exists $filters->{$filterName}){
       for my $filter (@{$filters->{$filterName}}){
+        say "\t$filter";
         my $regexp = qr/$filter/i;
         if ($data->{$k} =~ $regexp){
           return 1;
@@ -304,7 +293,6 @@ sub _exists_in_history{
     push @parameters, $data->{date};
   }
 
-
   my $stmt = $dbh->prepare($query);
   $stmt->execute(@parameters);
   my ($tuples, $rows) = $dbh->selectall_arrayref($stmt);
@@ -323,8 +311,7 @@ sub _exists_in_history{
     for(keys %$data){
       push @parameters, $_ if(exists $data->{$_} && $_ ne 'url');
     }
-    $query = 'select * from history where '.join(' and ', map{ if($_ =~ /valid/){ "$_=?";}else{"$_ like ?";}} @parameters );
-
+    $query = 'select * from history where '.join(' and ', map{ if($_ =~ /valid/){ "$_=?";}else{"'$_' like ?";}} @parameters );
     $stmt = $dbh->prepare($query);
     $stmt->execute(map{$data->{$_}} @parameters);
 
@@ -339,9 +326,8 @@ sub _exists_in_history{
 
 sub _store_data_to_db{
   my ($dbh, $data) = @_;
-
-  return 0 if !defined $data->{query} || !defined $data->{url};
-  my @parameters = qw/language title subtitles resolution format audio releaseGroup episode source date container fix type desc query url/;
+  return 0 if !defined $data->{search} || !defined $data->{url};
+  my @parameters = qw/language title subtitles resolution codec audio group episode source date fix type search url/;
   my $query = 'insert into history('.join(',',map{"'$_'"} @parameters).') values('.join(',', map{'?'} @parameters).')';
   my $stmt = $dbh->prepare($query);
   my $rv = $stmt->execute(map{$data->{$_}}@parameters) or die 'Error while storing data: '.$stmt->errstr;
