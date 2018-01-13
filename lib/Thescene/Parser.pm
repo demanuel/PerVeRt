@@ -91,7 +91,7 @@ sub parse_source {
   my ($title) = @_;
   my @regexps = (
     qr/\.((complete\.)?(m?blu-?ray))[\.-]?/i,
-    qr/\.(((bd(scr(eener)?)?)|(p?dvd((scr(eener)?))?)|(bd)|(br)|((((amzn)|(hulu)|(nf))\.)?web-?((dl)|(cap))?)|(tv)|(vhs)|(hd-?((tv)|(cam))?)|(vod)|(ds)|(sat)|(dth)|(dvb)|(ppv)|(ddc)|(wp)|(workprint)|(r[0-9](\.line)?))(ri?p?)?)[\.-]?/i,
+    qr/\.(((bd(scr(eener)?)?)|(p?dvd((scr(eener)?))?)|(bd)|(br)|((((amzn)|(hulu)|(nf))\.)?web-?((dl)|(cap))?)|(tv)|(vhs)|(hd-?((tv|ts)|(cam))?)|(vod)|(ds)|(sat)|(dth)|(dvb)|(ppv)|(ddc)|(wp)|(workprint)|(r[0-9](\.line)?))(ri?p?)?)[\.-]?/i,
     qr/\.(t(ele)?((sync)|(cine))?)[\.-]?/i
   );
   my $source;

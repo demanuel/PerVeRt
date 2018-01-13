@@ -66,8 +66,9 @@ sub _start_processing{
       for my $item ($dom->findnodes('//channel/item')) {
         my $title = $item->findvalue('title');
         my $data = parse_string($title);
-
-        next if !$data->{source} || !$data->{resolution} || !$data->{source} || !$data->{group};
+        # say $title;
+        # say Dumper($data);
+        next if !$data->{source} || !$data->{resolution} || !$data->{source} || !$data->{group} || !$data->{title};
         $data->{title}=join(".",map{ucfirst $_; } split(/\./, lc($data->{title})));
         for my $wish (@wishes){
           my $approved=1;
@@ -177,7 +178,9 @@ sub _filter_and_remove_duplicates{
 
 sub _convert_resolution_to_int{
   my ($resolution) = @_;
-  $resolution =~ /^(\d+)\.$/;
+  return 0 if !$resolution;
+  $resolution =~ /(\d+).+/;
+  say "resolution: $resolution -> $1";
   return int($1);
 
 }

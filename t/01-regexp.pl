@@ -196,6 +196,9 @@ subtest 'Parse source' => sub {
   $data = parse_source('Title.Of.The.Release.S01.E02.LANGUAGE.2014.ANiME.DTS.DL.1080p.BluRay.x264-Group');
   is($data->[0], 'BLURAY');
   is($data->[1],'Title.Of.The.Release.S01.E02.LANGUAGE.2014.ANiME.DTS.DL.1080p.x264-Group');
+  $data=parse_source('Title.Of.The.Release.2017.NEW.720p.HD-TS.X264.HQ-GROUP');
+  is($data->[0], 'HD-TS');
+  is($data->[1], 'Title.Of.The.Release.2017.NEW.720p.X264.HQ-GROUP');
 };
 
 subtest 'Parse Language' => sub {
@@ -247,12 +250,9 @@ subtest 'Parse Language' => sub {
   $data = parse_language('Series.Title.1x08.Episode.Title.DANish.1080p.WEBMux.x264-Group');
   is($data->[0], 'DANISH'); 
   is($data->[1],'Series.Title.1x08.Episode.Title.1080p.WEBMux.x264-Group');    
-
   $data = parse_language('Title.Multi.Subs.En.Audio.DD5.1.Stuff');
   is($data->[0],'EN');
   is($data->[1], 'Title.Multi.Subs.Audio.DD5.1.Stuff');
-
-
   $data = parse_language('release.title.Dk.En.Subs.Dk.Audio.DD5.1.Stuff');
   is($data->[0],'DK');
   is($data->[1], 'release.title.Dk.En.Subs.Audio.DD5.1.Stuff');
