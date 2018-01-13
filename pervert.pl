@@ -189,8 +189,8 @@ sub _load_wishes{
 
   my ($configs) = @_;
   my @wishList = ();
-
-  open my $ifh,'<', $configs->{requests};
+  
+  open my $ifh,'<', $configs->{requests} or die "Unable to open file $configs->{requests}: $!";
 
   while (<$ifh>) {
     chomp;
