@@ -368,8 +368,6 @@ subtest 'Parse string' => sub {
   is($data->{type},undef);
 
   $data = parse_string('title.of.the.movie.S01.SUBFRENCH.720p.WEB.H264-miGroupo');
-  use Data::Dumper;
-  say Dumper($data);
   is($data->{title},'title.of.the.movie');
   is($data->{episode}, 'S01');
   is($data->{date},undef);

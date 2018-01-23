@@ -91,7 +91,7 @@ sub parse_source {
   my ($title) = @_;
   my @regexps = (
     qr/\.((complete\.)?(m?blu-?ray))[\.-]?/i,
-    qr/\.(((bd(scr(eener)?)?)|(p?dvd((scr(eener)?))?)|(bd)|(br)|((((amzn)|(hulu)|(nf))\.)?web-?((dl)|(cap))?)|(tv)|(vhs)|(hd-?((tv|ts)|(cam))?)|(vod)|(ds)|(sat)|(dth)|(dvb)|(ppv)|(ddc)|(wp)|(workprint)|(r[0-9](\.line)?))(ri?p?)?)[\.-]?/i,
+    qr/\.(((bd(scr(eener)?)?)|(p?dvd((scr(eener)?))?)|(ts)|(bd)|(br)|((((amzn)|(hulu)|(nf))\.)?web-?((dl)|(cap))?)|(tv)|(vhs)|(hd-?((tv|ts)|(cam))?)|(vod)|(ds)|(sat)|(dth)|(dvb)|(ppv)|(ddc)|(wp)|(workprint)|(r[0-9](\.line)?))(ri?p?)?)[\.-]?/i,
     qr/\.(t(ele)?((sync)|(cine))?)[\.-]?/i
   );
   my $source;
@@ -133,7 +133,7 @@ sub parse_language {
     }
   } else {
     while(1) {
-      my $new_data = _extract_simple(qr/[\.-]((dutch)|(nordic)|(german)|(portuguese)|(ita(lian)*)|(multi)|(((dan)|(eng*l*)|(span*)|(swed*))(ish)*)|(french)|(dk))[\.-](?!subs*)/i, $title);
+      my $new_data = _extract_simple(qr/[\.-](dutch|nordic|german|portuguese|ita(lian)*|multi|((dan|eng*l*|span*|swed*)(ish)*)|(true)*french|dk)[\.-](?!subs*)/i, $title);
       $title = $new_data->[1];
       $data->[1] = $title;
       last if !$new_data->[0];
