@@ -229,6 +229,10 @@ sub parse_string {
   $data{audio} = $data->[0] if $data->[0];
   # say "2",$data->[1];
 
+  $data = parse_codec($data->[1]);
+  $data{codec} = $data->[0] if $data->[0];
+  # say "5",$data->[1];
+
   $data = parse_episode($data->[1]);
   $data{episode} = $data->[0] if $data->[0];
   # say "1",$data->[1];
@@ -240,10 +244,6 @@ sub parse_string {
   $data = parse_fix($data->[1]);
   $data{fix} = $data->[0] if $data->[0];
   # say "4",$data->[1];
-
-  $data = parse_codec($data->[1]);
-  $data{codec} = $data->[0] if $data->[0];
-  # say "5",$data->[1];
 
   $data = parse_language($data->[1]);
   $data{language} = $data->[0] if $data->[0];
