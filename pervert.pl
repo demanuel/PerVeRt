@@ -101,22 +101,8 @@ sub _start_processing{
 
    }
    say "Number of candidates found: ".@candidates;
-   for (@candidates){
-    print "\t[$_->{title}] ";
-    print "[$_->{episode}] " if(exists $_->{episode});
-    print "[$_->{resolution}] " if(exists $_->{resolution});
-    print "[$_->{language}] " if(exists $_->{language});
-    print "[$_->{subtitles}] " if(exists $_->{subtitles});
-    print "[$_->{date}] " if(exists $_->{date});
-    print "[$_->{source}] " if(exists $_->{source});
-    print "[$_->{fix}] " if(exists $_->{fix});
-    print "[$_->{type}] " if(exists $_->{type});
-    print "[$_->{audio}] " if(exists $_->{audio});
-    print "[$_->{desc}] " if(exists $_->{desc} && $_->{desc} ne '');
-    print "[$2] " if ($_->{url} =~ /http(s)?:\/\/(.*?)\//);
-    print "[$_->{releaseGroup}] " if(exists $_->{releaseGroup} && $_->{releaseGroup} ne '');
-    print "\r\n";
-   }
+   print_candidate($_) for (@candidates);
+
    @candidates = @{_filter_and_remove_duplicates($configs, $dbh, \@candidates)};
    say "Number of candidates approved: ".@candidates;
 
@@ -131,6 +117,25 @@ sub _start_processing{
    }
 }
 
+sub print_candidate {
+  my ($candidate) = @_;
+
+  print "\t[$candidate->{title}] ";
+  print "[$candidate->{episode}] " if(exists $candidate->{episode});
+  print "[$candidate->{resolution}] " if(exists $candidate->{resolution});
+  print "[$candidate->{language}] " if(exists $candidate->{language});
+  print "[$candidate->{subtitles}] " if(exists $candidate->{subtitles});
+  print "[$candidate->{date}] " if(exists $candidate->{date});
+  print "[$candidate->{source}] " if(exists $candidate->{source});
+  print "[$candidate->{fix}] " if(exists $candidate->{fix});
+  print "[$candidate->{type}] " if(exists $candidate->{type});
+  print "[$candidate->{audio}] " if(exists $candidate->{audio});
+  print "[$candidate->{desc}] " if(exists $candidate->{desc} && $candidate->{desc} ne '');
+  print "[$2] " if ($candidate->{url} =~ /http(s)?:\/\/(.*?)\//);
+  print "[$candidate->{releaseGroup}] " if(exists $candidate->{releaseGroup} && $candidate->{releaseGroup} ne '');
+  print "\n";
+
+}
 
 sub _filter_and_remove_duplicates{
   my ($configs, $dbh, $downloadList) = @_;
@@ -158,6 +163,8 @@ sub _filter_and_remove_duplicates{
     } } @$downloadList;
 
   for my $candidate (@downloadList){
+    print "Checking ";
+    print_candidate($candidate);
     if(!_exists_in_history($dbh, $candidate) && !_is_filtered($configs->{filters}, $candidate)){
       my $ignore = 0;
       for my $position (0..$#finalList){
@@ -180,9 +187,7 @@ sub _convert_resolution_to_int{
   my ($resolution) = @_;
   return 0 if !$resolution;
   $resolution =~ /(\d+).+/;
-  say "resolution: $resolution -> $1";
   return int($1);
-
 }
 
 sub _load_wishes{
@@ -248,9 +253,9 @@ sub _is_filtered{
     $filterName='ignore'.ucfirst $k;
     if(exists $filters->{$filterName}){
       for my $filter (@{$filters->{$filterName}}){
-        say "\t$filter";
         my $regexp = qr/$filter/i;
         if ($data->{$k} =~ $regexp){
+          say "\tignored because of $filter";
           return 1;
         }
       }
