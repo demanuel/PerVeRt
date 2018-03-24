@@ -120,7 +120,7 @@ sub _start_processing{
 sub print_candidate {
   my ($candidate) = @_;
 
-  print "\t[$candidate->{title}] ";
+  print "[$candidate->{title}] ";
   print "[$candidate->{episode}] " if(exists $candidate->{episode});
   print "[$candidate->{resolution}] " if(exists $candidate->{resolution});
   print "[$candidate->{language}] " if(exists $candidate->{language});
@@ -255,7 +255,7 @@ sub _is_filtered{
       for my $filter (@{$filters->{$filterName}}){
         my $regexp = qr/$filter/i;
         if ($data->{$k} =~ $regexp){
-          say "\tignored because of $filter";
+          say " ignored because of $filter";
           return 1;
         }
       }
