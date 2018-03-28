@@ -133,7 +133,7 @@ sub parse_language {
     }
   } else {
     while(1) {
-      my $new_data = _extract_simple(qr/[\.-](dutch|nordic|german|portuguese|ita(lian)*|multi|((dan|eng*l*|span*|swed*)(ish)*)|(true)*french|dk)[\.-](?!subs*)/i, $title);
+      my $new_data = _extract_simple(qr/[\.-](dutch|nordic|german|portuguese|ita(lian)*|multi|((dan|eng*l*|span*|swed*)(ish)*)|(true)*french|dk|vf[fq])[\.-](?!subs*)/i, $title);
       $title = $new_data->[1];
       $data->[1] = $title;
       last if !$new_data->[0];

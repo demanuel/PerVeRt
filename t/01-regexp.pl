@@ -521,7 +521,23 @@ subtest 'Parse string' => sub {
   is($data->{language},'TRUEFRENCH');
   is($data->{resolution},'720p');
   is($data->{subtitles},undef);
-  is($data->{type},'iNTERNAL');    
+  is($data->{type},'iNTERNAL');
+
+  $data = parse_string('Title.of.the.Release.2018.iNTERNAL.720p.VFQ.TS.LD.x264-Group');
+  is($data->{title},'Title.of.the.Release');
+  is($data->{episode}, undef);
+  is($data->{date},2018);
+  is($data->{source},'TS');
+  is($data->{group}, 'Group');
+  is($data->{audio},'LD');
+  is($data->{fix},undef);
+  is($data->{codec}, 'x264');
+  is($data->{language},'VFQ');
+  is($data->{resolution},'720p');
+  is($data->{subtitles},undef);
+  is($data->{type},'iNTERNAL');
+
+
 
 };
 
