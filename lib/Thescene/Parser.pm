@@ -77,7 +77,7 @@ sub parse_fix {
 
 sub parse_audio {
   my ($title) = @_;
-  my $results = _extract_simple(qr/\.((mp\d)|(aac(\d\.\d)?)|(ac3d*)|(dts(\.dl)*)|(dd[\.p]*[25]\.[01])|(flac))[\.-]?/i,$title);
+  my $results = _extract_simple(qr/\.((flac)|(mp\d)|(aac(\d\.\d)?)|(ac3d*)|(dts(\.dl)*)|(dd[\.p]*[25]\.[01])|([ml]d))[\.-]?/i,$title);
   if ($results->[0]) {
     $results->[0] = uc $results->[0];
     my $count = $results->[0] =~ tr/.//;
