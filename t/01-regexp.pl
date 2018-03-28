@@ -467,7 +467,7 @@ subtest 'Parse string' => sub {
   is($data->{type},undef);
 
 
-    $data = parse_string('Group-Title.of.the.Release.2017.bdrip.h.264-subs');
+  $data = parse_string('Group-Title.of.the.Release.2017.bdrip.h.264-subs');
   is($data->{title},'Title.of.the.Release');
   is($data->{episode}, undef);
   is($data->{date},2017);
@@ -480,6 +480,20 @@ subtest 'Parse string' => sub {
   is($data->{resolution},undef);
   is($data->{subtitles},undef);
   is($data->{type},undef);
+
+  $data = parse_string('Group.-.Title.of.the.Release.2017.bdrip.h.264-subs');
+  is($data->{title},'Title.of.the.Release');
+  is($data->{episode}, undef);
+  is($data->{date},2017);
+  is($data->{source},'BDRIP');
+  is($data->{group}, 'Group');
+  is($data->{audio},undef);
+  is($data->{fix},undef);
+  is($data->{codec}, 'h264');
+  is($data->{language},'original');
+  is($data->{resolution},undef);
+  is($data->{subtitles},undef);
+  is($data->{type},undef);  
 
 
 };

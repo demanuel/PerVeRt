@@ -34,7 +34,7 @@ sub parse_release_group {
   my $group;
   my @regexp = (
     qr/-([aA-zZ0-0]+)$/,
-    qr/^([aA-zZ0-0]+?)-/,
+    qr/^([aA-zZ0-0]+?)\.*-/,
   );
   for my $re (@regexp) {
     if($title =~ /$re/ && !$RESTRICTED{$1}) {
@@ -279,6 +279,7 @@ sub _extract_simple {
   my $match;
   if($title =~ /$re/) {
     $match = $1;
+    $match =~ s/^\.+|\.+$//g;
     $title =~ s/[\.-]$match//;
   }
 
