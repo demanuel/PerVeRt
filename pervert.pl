@@ -122,17 +122,18 @@ sub print_candidate {
 
   print "[$candidate->{title}] ";
   print "[$candidate->{episode}] " if(exists $candidate->{episode});
-  print "[$candidate->{resolution}] " if(exists $candidate->{resolution});
-  print "[$candidate->{language}] " if(exists $candidate->{language});
-  print "[$candidate->{subtitles}] " if(exists $candidate->{subtitles});
   print "[$candidate->{date}] " if(exists $candidate->{date});
   print "[$candidate->{source}] " if(exists $candidate->{source});
-  print "[$candidate->{fix}] " if(exists $candidate->{fix});
-  print "[$candidate->{type}] " if(exists $candidate->{type});
+  print "[$candidate->{group}] " if(exists $candidate->{group});
   print "[$candidate->{audio}] " if(exists $candidate->{audio});
+  print "[$candidate->{fix}] " if(exists $candidate->{fix});
+  print "[$candidate->{codec}] " if(exists $candidate->{fix});
+  print "[$candidate->{language}] " if(exists $candidate->{language});
+  print "[$candidate->{resolution}] " if(exists $candidate->{resolution});
+  print "[$candidate->{subtitles}] " if(exists $candidate->{subtitles});
+  print "[$candidate->{type}] " if(exists $candidate->{type});
   print "[$candidate->{desc}] " if(exists $candidate->{desc} && $candidate->{desc} ne '');
   print "[$2] " if ($candidate->{url} =~ /http(s)?:\/\/(.*?)\//);
-  print "[$candidate->{releaseGroup}] " if(exists $candidate->{releaseGroup} && $candidate->{releaseGroup} ne '');
   print "\n";
 
 }
