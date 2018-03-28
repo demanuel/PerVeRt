@@ -493,7 +493,21 @@ subtest 'Parse string' => sub {
   is($data->{language},'original');
   is($data->{resolution},undef);
   is($data->{subtitles},undef);
-  is($data->{type},undef);  
+  is($data->{type},undef);
+
+  $data = parse_string('Title.of.the.Release.2018.720p.HC.HDRIP.X264.AC3-Group');
+  is($data->{title},'Title.of.the.Release');
+  is($data->{episode}, undef);
+  is($data->{date},2018);
+  is($data->{source},'HDRIP');
+  is($data->{group}, 'Group');
+  is($data->{audio},'AC3');
+  is($data->{fix},undef);
+  is($data->{codec}, 'x264');
+  is($data->{language},'original');
+  is($data->{resolution},'720p');
+  is($data->{subtitles},'HC');
+  is($data->{type},undef);    
 
 
 };

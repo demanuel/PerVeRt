@@ -182,7 +182,7 @@ sub parse_subtitles {
     }
     $data->[1] = $title;
   }
-  elsif ($title =~ /(?:[\.-])*((vost(fr)*)|(subbed))(?:[\.-])*/i) {
+  elsif ($title =~ /(?:[\.-])*((vost(fr)*)|(subbed|hc))(?:[\.-])*/i) {
     $data->[0] = $1;
     $data->[1] = $title;
     $data->[1] =~ s/[\.-]\Q$data->[0]\E//; 
