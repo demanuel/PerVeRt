@@ -50,7 +50,8 @@ sub _start_processing{
   my @candidates = ();
 
   for (@{$configs->{feeds}}){
-    print "Connecting to $_->{name} ";
+    my $name = $_->{name};
+    print "Connecting to $name ";
     my $response = $browser->get($_->{url});
 
     if($response->is_error){
@@ -65,6 +66,11 @@ sub _start_processing{
       my $dom = XML::LibXML->load_xml(string => $content);
       for my $item ($dom->findnodes('//channel/item')) {
         my $title = $item->findvalue('title');
+        $title =~ s/\s+\-\s+$name$//;
+        if ($title =~ /\s/){
+          my @words = split(/\s+/, $title);
+          $title = join('.',@words[0..$#words-1]).'-'.$words[-1];
+        }
         my $data = parse_string($title);
         # say $title;
         # say Dumper($data);
