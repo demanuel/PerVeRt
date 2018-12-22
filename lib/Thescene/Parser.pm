@@ -220,7 +220,7 @@ sub parse_title {
 sub parse_string {
   my ($string) = @_;
   my %data = ();
-  return \%data if $string =~ /[^aA-zZ0-9\-\.]/;
+  return \%data if $string =~ /[^[:alnum:]\-\._]/;
   # say $string;
   # $string = quotemeta($string);
   # $string =~ s/\\$//;
