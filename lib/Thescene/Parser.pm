@@ -33,7 +33,7 @@ sub parse_release_group {
   my ($title) = @_;
   my $group;
   my @regexp = (
-    qr/-([aA-zZ0-0]+)$/,
+    qr/-([aA-zZ0-0]+)*$/,
     qr/^([aA-zZ0-0]+?)\.*-/,
   );
   for my $re (@regexp) {

@@ -246,31 +246,35 @@ sub _is_filtered{
   my ($filters, $data) = @_;
 
   my $filterName;
+  my $skip_download=0;
   for my $k (keys %$data){
     next if !exists $data->{$k};
     $filterName='accept'.ucfirst $k;
     if(exists $filters->{$filterName}){
       for my $filter (@{$filters->{$filterName}}){
         my $regexp = qr/$filter/i;
-        if ($data->{$k} =~ $regexp){
-         return 0;
-        }
+        unless ($data->{$k} =~ $regexp){
+	    $skip_download=1;
+        } else {
+	    $skip_download = 0;
+	    last;
+	}
       }
     }
+    return 1 if $skip_download;
     $filterName='ignore'.ucfirst $k;
     if(exists $filters->{$filterName}){
       for my $filter (@{$filters->{$filterName}}){
         my $regexp = qr/$filter/i;
         if ($data->{$k} =~ $regexp){
           say " ignored because of $filter";
-          return 1;
+          $skip_download = 1;
         }
       }
     }
   }
 
-  # All the filters run and it didn't match any
-  return 0;
+  return $skip_download;
 }
 
 sub _load_db{
@@ -329,7 +333,6 @@ sub _exists_in_history{
     $stmt->execute(map{$data->{$_}} @parameters);
 
     ($tuples, $rows) = $dbh->selectall_arrayref($stmt);
-
     return scalar(@$tuples)>0;
 
   }else{
