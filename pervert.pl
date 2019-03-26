@@ -172,20 +172,25 @@ sub _filter_and_remove_duplicates{
   for my $candidate (@downloadList){
     print "Checking ";
     print_candidate($candidate);
+    
     if(!_exists_in_history($dbh, $candidate) && !_is_filtered($configs->{filters}, $candidate)){
-      my $ignore = 0;
-      for my $position (0..$#finalList){
-        my $finalCandidate = $finalList[$position];
-        if (lc($finalCandidate->{title}) eq lc($candidate->{title})){
-          if($finalCandidate->{episode} eq $candidate->{episode}) {
-            $ignore = 1;
-            last;
-          }
-        }
-      }
-      push @finalList, $candidate if !$ignore;
+	my $ignore = 0;
+	say "\tDoesn't exist in history and is not filtered - Checking previous candidates";
+	for my $position (0..$#finalList){
+	    my $finalCandidate = $finalList[$position];
+	    if (lc($finalCandidate->{title}) eq lc($candidate->{title})){
+		if($finalCandidate->{episode} eq $candidate->{episode}) {
+		    say "Found already processed candidate for the same media. Discarding this one";
+		    $ignore = 1;
+		    last;
+		}
+	    }
+	}
+	push @finalList, $candidate if !$ignore;
     }
   }
+  say "Candidates approved: ";
+  print "\t" && print_candidate $_ for(@finalList);
 
   return \@finalList;
 }
@@ -246,35 +251,39 @@ sub _is_filtered{
   my ($filters, $data) = @_;
 
   my $filterName;
-  my $skip_download=0;
+  my $accept_download=0;
   for my $k (keys %$data){
     next if !exists $data->{$k};
     $filterName='accept'.ucfirst $k;
-    if(exists $filters->{$filterName}){
+      if(exists $filters->{$filterName}){
       for my $filter (@{$filters->{$filterName}}){
         my $regexp = qr/$filter/i;
-        unless ($data->{$k} =~ $regexp){
-	    $skip_download=1;
-        } else {
-	    $skip_download = 0;
-	    last;
-	}
+        if ($data->{$k} !~ $regexp){
+	    $accept_download += 1;
+        }
       }
+
+      # Didn't match any of the accepted filter
+      if ($accept_download == @{$filters->{$filterName}} && @{$filters->{$filterName}} != 0) {
+	  say "\tIgnored because of accepted filter @{$filters->{$filterName}}";
+	  return 1;
+      }
+      $accept_download=0;
     }
-    return 1 if $skip_download;
+
     $filterName='ignore'.ucfirst $k;
     if(exists $filters->{$filterName}){
       for my $filter (@{$filters->{$filterName}}){
         my $regexp = qr/$filter/i;
         if ($data->{$k} =~ $regexp){
-          say " ignored because of $filter";
-          $skip_download = 1;
+	    say "\tIgnored because of $filter [$data->{$k} vs $regexp]";
+	    return 1;
         }
       }
     }
   }
 
-  return $skip_download;
+  return 0;
 }
 
 sub _load_db{
@@ -335,9 +344,8 @@ sub _exists_in_history{
     ($tuples, $rows) = $dbh->selectall_arrayref($stmt);
     return scalar(@$tuples)>0;
 
-  }else{
-    return 1;
   }
+  return 1;
 }
 
 sub _store_data_to_db{
